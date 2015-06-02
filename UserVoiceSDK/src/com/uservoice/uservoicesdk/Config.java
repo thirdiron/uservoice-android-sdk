@@ -24,6 +24,7 @@ public class Config extends BaseModel {
     private String email;
     private String name;
     private String guid;
+    private String defaultText;
     private Map<String, String> customFields = new HashMap<String, String>();
     private int topicId = -1;
     private int forumId = -1;
@@ -72,6 +73,14 @@ public class Config extends BaseModel {
 
     public Map<String, String> getCustomFields() {
         return customFields;
+    }
+
+    public String getDefaultText() {
+        return this.defaultText;
+    }
+
+    public void setDefaultText(String defaultText) {
+        this.defaultText = defaultText;
     }
 
     public void setCustomFields(Map<String, String> customFields) {
