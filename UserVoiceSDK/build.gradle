@@ -4,19 +4,40 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'com.android.tools.build:gradle:0.14.+'
     }
 }
 
 apply plugin: 'android-library'
+
+apply plugin: 'maven'
+ 
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.groupId = 'com.uservoice'
+        pom.artifactId = 'uservoice-android-sdk'
+        pom.version = '1.2.4'
+        // Add other pom properties here if you want (developer details / licenses)
+        repository(url: "file:///Users/austin/code/")
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from 'src', 'res'
+}
+
+artifacts {
+    archives sourcesJar
+}
 
 repositories {
     mavenCentral()
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.0.2'
 
     sourceSets {
         main {
@@ -29,8 +50,15 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:20.+'
+    compile 'com.android.support:support-v4:21.'
+    compile 'com.android.support:appcompat-v7:21.+'
     compile 'commons-codec:commons-codec:1.8'
-    compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
-    compile 'oauth.signpost:signpost-core:1.2.1.2'
+    compile ('oauth.signpost:signpost-commonshttp4:1.2.1.2') {
+        exclude module: 'commons-logging'
+        exclude module: 'httpcore'
+        exclude module: 'httpclient'
+    }
+    compile ('oauth.signpost:signpost-core:1.2.1.2') {
+        exclude module: 'commons-codec'
+    }
 }

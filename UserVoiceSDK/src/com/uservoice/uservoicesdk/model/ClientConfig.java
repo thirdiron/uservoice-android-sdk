@@ -50,6 +50,7 @@ public class ClientConfig extends BaseModel {
                 public void onComplete(JSONObject result) throws JSONException {
                     ClientConfig clientConfig = deserializeObject(result, "client", ClientConfig.class);
                     clientConfig.persist(prefs, cacheKey, "client");
+                    Session.getInstance().setClientConfig(clientConfig);
                 }
             });
         } else {
@@ -80,9 +81,9 @@ public class ClientConfig extends BaseModel {
         defaultSort = getString(object.getJSONObject("subdomain"), "default_sort");
         subdomainId = getString(object.getJSONObject("subdomain"), "id");
         accountName = getString(object.getJSONObject("subdomain"), "name");
-        key = object.getString("key");
+        key = getString(object, "key");
         // secret will only be available for the default client
-        secret = object.has("secret") ? object.getString("secret") : null;
+        secret = object.has("secret") ? getString(object, "secret") : null;
     }
 
     @Override
@@ -95,13 +96,7 @@ public class ClientConfig extends BaseModel {
         JSONObject forum = new JSONObject();
         forum.put("id", defaultForumId);
         object.put("forum", forum);
-        JSONArray jsonCustomFields = new JSONArray();
-        for (CustomField customField : customFields) {
-            JSONObject jsonCustomField = new JSONObject();
-            customField.save(jsonCustomField);
-            jsonCustomFields.put(jsonCustomField);
-        }
-        object.put("custom_fields", jsonCustomFields);
+        object.put("custom_fields", serializeList(customFields));
         JSONObject subdomain = new JSONObject();
         subdomain.put("id", subdomainId);
         subdomain.put("default_sort", defaultSort);

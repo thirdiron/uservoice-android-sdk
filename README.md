@@ -6,42 +6,36 @@ You can try out UserVoice for Android by installing the [UserVoice Help Center a
 
 You will need a UserVoice account (free) for it to connect to. Go to [uservoice.com](https://www.uservoice.com/plans/) to sign up.
 
-### Installation for Eclipse
+### Installation
 
-* File -> Import... -> General -> Existing Projects into Workspace
-  * Select the UserVoiceSDK folder
-  * If you wish, also select the UVDemo project (this is a demo of how to connect to the SDK).
-* Select the project you wish to add UserVoice to
-  * Open project properties -> Android -> Library -> Add...
-  * Select the UserVoiceSDK project as a library
-* Add the following code to initialize the UserVoice SDK
-  * Do this either in Application.onCreate or your root Activity.onCreate
-  * We strongly recommend you do this on app launch so that UserVoice can provide accurate analytics.
-  * You can call UserVoice.init again later if you need to change something about the config.
+The best way to install UserVoice for Android is to use gradle and jcenter. First add jcenter to your list of Maven repositories, if needed.
+
+```
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+```
+
+Then, add the UserVoice SDK as a project dependency.
+
+```
+dependencies {
+    compile 'com.uservoice:uservoice-android-sdk:+'
+}
+```
+
+Add the following code to initialize the UserVoice SDK. This code should run whenever the user launches your app (for metrics purposes), but you also need to make sure that it has been run before trying to launch the UserVoice interface. (If a user navigates directly to one of your apps activities and then launches UserVoice, you want it to be initialized first.)
+
+You can also call UserVoice.init() again with a different config if you need different settings in different contexts.
 
 ```
 Config config = new Config("yoursite.uservoice.com");
 UserVoice.init(config, this);
 ```
 
-* Make sure you include an Internet permission in your AndroidManifest.xml
-
-```
-<uses-permission android:name="android.permission.INTERNET"/>
-```
-
-* Add the following activities to the <application> element in your AndroidManifest.xml
-
-```
-<activity android:name="com.uservoice.uservoicesdk.activity.PortalActivity" />
-<activity android:name="com.uservoice.uservoicesdk.activity.ForumActivity" /> 
-<activity android:name="com.uservoice.uservoicesdk.activity.ArticleActivity" />
-<activity android:name="com.uservoice.uservoicesdk.activity.TopicActivity" />
-<activity android:name="com.uservoice.uservoicesdk.activity.ContactActivity" android:configChanges="orientation|keyboardHidden|screenSize" />
-<activity android:name="com.uservoice.uservoicesdk.activity.PostIdeaActivity" android:configChanges="orientation|keyboardHidden|screenSize" />
-```
-
-* Finally, invoke the UserVoice SDK from your application using one of the following methods.
+Finally, invoke the UserVoice SDK from your application using one of the following methods.
 
 ```
 UserVoice.launchUserVoice(this);    // Show the UserVoice portal
@@ -113,7 +107,19 @@ UserVoice.track("myevent");
 UserVoice.track("myevent", propertyMap);
 ```
 
+### Theming
+
+Starting in version 1.2.0 the UserVoice SDK uses its own theme rather than inheriting the theme of the host app, so that the host app's theme won't conflict with it (e.g. if the host app does not use an AppCompat theme, or if it doesn't have an action bar). To customize the appearance of the UserVoice SDK, you need to override its default theme by creating a theme called `UserVoiceTheme` in your own `styles.xml` files. This theme will need to derive from `Theme.AppCompat` from the v7 compatibility library, and include an action bar.
+
+```
+<style name="UserVoiceTheme" parent="Theme.AppCompat.Light">
+    <!-- theme customizations -->
+</style>
+```
+
 ### Private sites
+
+Note: UserVoice for Android does **not** support private **forums**. This section is only relevant to those using sitewide privacy.
 
 The SDK relies on being able to obtain a client key to communicate with the UserVoice API. If you have a public UserVoice site (the default) then it can obtain this key automatically, so you only need to pass your site URL. However, if you turn on site privacy, this key is also private, so you will need to pass it in. You can obtain an API key pair from the mobile settings section of the UserVoice admin console.
 
@@ -121,6 +127,10 @@ The SDK relies on being able to obtain a client key to communicate with the User
 Config config = new Config("yoursite.uservoice.com", "API_CLIENT_KEY", "API_CLIENT_SECRET");
 UserVoice.init(config);
 ```
+
+### Kids Apps
+
+The UserVoice Platform, including iOS & Android SDKs, is not COPPA compliant and should not be used in apps marketed at children.
 
 Translations
 ------------

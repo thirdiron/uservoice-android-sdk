@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +29,9 @@ public class Topic extends BaseModel implements Parcelable {
     }};
 
     public static void loadTopics(final Callback<List<Topic>> callback) {
-        doGet(apiPath("/topics.json"), new RestTaskCallback(callback) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("per_page", "100");
+        doGet(apiPath("/topics.json"), params, new RestTaskCallback(callback) {
             @Override
             public void onComplete(JSONObject object) throws JSONException {
                 List<Topic> allTopics = deserializeList(object, "topics", Topic.class);
